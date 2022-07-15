@@ -47,19 +47,19 @@ while(true)
 
 void ExchangeCurrency()
 {
-  string availiableAmount = "";
+  decimal availiableAmount = 0.00m;
   string currencyToBuy = ""; 
   string currencyToSell = "";
-  double amountToSell = 0; 
-  double amountToBuy = 0;
-  double exchangeRate = 0;
+  decimal amountToSell = 0.00m; 
+  decimal amountToBuy = 0.00m;
+  decimal exchangeRate = 0.0000m;
  
   currencyToSell = InputString("Введите код валюты (например - USD), которую хотите продать: ");
   for (int i = 0; i < currencyBalance.GetLength(0); i++)
   {
     if (currencyBalance[i,0] == currencyToSell)
     {  
-       availiableAmount = currencyBalance[i,1];
+       availiableAmount = Convert.ToDecimal(currencyBalance[i,1]);
        Console.WriteLine($"Доступный остаток составляет {currencyToSell} {availiableAmount}");
        break;
     }
@@ -71,8 +71,8 @@ void ExchangeCurrency()
   }
   
   Console.WriteLine($"Введите сумму {currencyToSell} для обмена: ");
-  amountToSell = Convert.ToDouble(Console.ReadLine());
-  if (Convert.ToDouble(availiableAmount) < amountToSell)
+  amountToSell = Convert.ToDecimal(Console.ReadLine());
+  if (Convert.ToDecimal(availiableAmount) < amountToSell)
   {
      Console.WriteLine($"Cумма для обмена превышает доступный остаток");
      return;
@@ -96,14 +96,14 @@ void ExchangeCurrency()
   {
     if (rates[i,0] == currencyToSell && rates[i,1] == currencyToBuy)
     {
-      exchangeRate = Convert.ToDouble(rates[i,2]);
-      amountToBuy = amountToSell * exchangeRate;
+      exchangeRate = Convert.ToDecimal(rates[i,2]);
+      amountToBuy = Math.Round(amountToSell * exchangeRate,2);
       break;
     }
     else if (rates[i,0] == currencyToBuy && rates[i,1] == currencyToSell)
     {
-      exchangeRate = Convert.ToDouble(rates[i,2]);
-      amountToBuy = amountToSell * 1 / exchangeRate;
+      exchangeRate = Convert.ToDecimal(rates[i,2]);
+      amountToBuy = Math.Round(amountToSell * Math.Round(1 / exchangeRate,4),2);
       break;
     }
   } 
@@ -129,13 +129,13 @@ void ExchangeCurrency()
   }
 }
 
-void ChangeBalance(string currency, double amount, string [,] balance)
+void ChangeBalance(string currency, decimal amount, string [,] balance)
 {
   for (int i = 0; i < balance.GetLength(0); i++)
   {
     if (balance[i,0] == currency)
     {
-      balance[i,1] = Convert.ToString(Convert.ToDouble(balance[i,1]) + amount);
+      balance[i,1] = Convert.ToString(Convert.ToDecimal(balance[i,1]) + amount);
       break;
     }
   }
