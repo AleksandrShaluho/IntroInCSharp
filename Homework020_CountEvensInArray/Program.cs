@@ -21,7 +21,6 @@ int CountEvens(int[] array)
 int[] FillArrayRandomly(int numberOfElements, int minValue = 0, int maxValue = 10)
 {
     int[] array = new int[numberOfElements]; 
-    int i = 0;
     for (i = 0; i < numberOfElements; i++)
     {
         array[i] = new Random().Next(minValue,maxValue + 1);
@@ -31,7 +30,6 @@ int[] FillArrayRandomly(int numberOfElements, int minValue = 0, int maxValue = 1
 
 void PrintArray(int[] array)
 {
-    int i = 0;
     
     //пустая строка чтобы визуально отделить вывод
     Console.WriteLine();   
