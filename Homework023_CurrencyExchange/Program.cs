@@ -1,169 +1,154 @@
 ﻿//конвертер валют. У пользователя есть баланс в каждой из представленных валют. С помощью команд он может попросить сконвертировать одну валюту в другую. Курс конвертации просто описать в программе. Программа заканчивает свою работу в момент, когда решит пользователь
+
+var currencyRates = new Dictionary<string, double>()
+{
+    ["USDRUB"] = 58.4568,
+    ["USDCNY"] = 6.7542,
+    ["CNYRUB"] = 8.6600
+
+};
+
+var currencyBalance = new Dictionary<string, double>()
+{
+    ["USD"] = 10000.00,
+    ["CNY"] = 200000.00,
+    ["RUB"] = 3000000.00
+
+};
+
 string userCommand = String.Empty;
-string[,] currencyBalance = new string[3,2];
-string[,] rates = new string[3,3];
-
-currencyBalance[0,0] = "USD";
-currencyBalance[1,0] = "CNY";
-currencyBalance[2,0] = "RUB";
-currencyBalance[0,1] =   "10000.00";
-currencyBalance[1,1] =  "200000.00";
-currencyBalance[2,1] = "3000000.00";
-
-rates[0,0] = "USD";
-rates[1,0] = "USD";
-rates[2,0] = "CNY";
-rates[0,1] = "RUB";
-rates[1,1] = "CNY";
-rates[2,1] = "RUB";
-rates[0,2] = "58.4568";
-rates[1,2] = "6.7542";
-rates[2,2] = "8.6600";
 
 Console.WriteLine("Конвертер валют. Для проведения конвертации введите пожалуйста команду 'exchange'. Для просмотра списка всех доступных команд введите 'help'.");
 
-while(true)
+while (true)
 {
-  userCommand = Console.ReadLine();
-  switch(userCommand.ToLower())
-  {
-    case "exit":
-      return;
-    case "exchange":
-      ExchangeCurrency();
-      break;
-    case "balance":
-      PrintBalance();
-      break;
-   case "help":
-      Help();
-      break;
-    default:
-      Console.WriteLine($"Неизвестная или неправильная команда {userCommand}. Для получения списка доступных команд введи 'help'");
-      break;
-  }
-  Console.WriteLine("Введите команду: ");
+    userCommand = Console.ReadLine();
+    switch (userCommand.ToLower())
+    {
+        case "exit":
+            return;
+        case "exchange":
+            ExchangeCurrency();
+            break;
+        case "balance":
+            PrintBalance(currencyBalance);
+            break;
+        case "rates":
+            PrintRates(currencyRates);
+            break;
+        case "help":
+            Help();
+            break;
+        default:
+            Console.WriteLine($"Неизвестная или неправильная команда {userCommand}. Для получения списка доступных команд введи 'help'");
+            break;
+    }
+    Console.WriteLine("Введите команду: ");
 }
 
 void ExchangeCurrency()
 {
-  decimal availiableAmount = 0.00m;
-  string currencyToBuy = ""; 
-  string currencyToSell = "";
-  decimal amountToSell = 0.00m; 
-  decimal amountToBuy = 0.00m;
-  decimal exchangeRate = 0.0000m;
- 
-  currencyToSell = InputString("Введите код валюты (например - USD), которую хотите продать: ");
-  for (int i = 0; i < currencyBalance.GetLength(0); i++)
-  {
-    if (currencyBalance[i,0] == currencyToSell)
-    {  
-       availiableAmount = Convert.ToDecimal(currencyBalance[i,1]);
-       Console.WriteLine($"Доступный остаток составляет {currencyToSell} {availiableAmount}");
-       break;
-    }
-    if (i == currencyBalance.GetLength(0) - 1 && currencyBalance[i,0] != currencyToSell)
-    {
-      Console.WriteLine("Вы ввели неверный код валюты");
-      return;
-    }
-  }
-  
-  Console.WriteLine($"Введите сумму {currencyToSell} для обмена: ");
-  amountToSell = Convert.ToDecimal(Console.ReadLine());
-  if (Convert.ToDecimal(availiableAmount) < amountToSell)
-  {
-     Console.WriteLine($"Cумма для обмена превышает доступный остаток");
-     return;
-  }  
-  
+    string currencyToBuy = "";
+    string currencyToSell = "";
+    double amountToSell = 0;
+    double amountToBuy = 0;
 
-  currencyToBuy = InputString("Введите код валюты, которую хотите купить: ");
-  for (int i = 0; i < currencyBalance.GetLength(0); i++)
-  {
-    if (currencyBalance[i,0] == currencyToBuy)
-       break;
+    PrintBalance(currencyBalance);
+    PrintRates(currencyRates);
 
-    if (i == currencyBalance.GetLength(0) - 1 && currencyBalance[i,0] != currencyToBuy)
+    currencyToSell = InputString("Введите код валюты (например - USD), которую хотите продать: ");
+    if (!currencyBalance.ContainsKey(currencyToSell))
     {
-      Console.WriteLine("Вы ввели неверный код валюты");
-      return;
+        Console.WriteLine("Вы ввели неверный код валюты");
+        return;
     }
-  }
-  
-  for (int i = 0; i < rates.GetLength(0); i++)
-  {
-    if (rates[i,0] == currencyToSell && rates[i,1] == currencyToBuy)
-    {
-      exchangeRate = Convert.ToDecimal(rates[i,2]);
-      amountToBuy = Math.Round(amountToSell * exchangeRate,2);
-      break;
-    }
-    else if (rates[i,0] == currencyToBuy && rates[i,1] == currencyToSell)
-    {
-      exchangeRate = Convert.ToDecimal(rates[i,2]);
-      amountToBuy = Math.Round(amountToSell * Math.Round(1 / exchangeRate,4),2);
-      break;
-    }
-  } 
-     
-  Console.WriteLine();
-  Console.WriteLine("Проверьте параметры конвертации и подтвердите выполнение операции");
-  Console.WriteLine($"Продажа. Валюта: {currencyToSell}. Сумма: {amountToSell}");
-  Console.WriteLine($"Покупка. Валюта: {currencyToBuy}. Сумма: {amountToBuy}");
-  Console.WriteLine($"Курс конвертации:{exchangeRate}.");
-  
-  Console.WriteLine("Подтверждаете проведение конвертации (y/n)?");
-  string confirmExchange = Console.ReadLine();  
 
-  if (confirmExchange == "y")
-  {
-    ChangeBalance(currencyToSell,-amountToSell,currencyBalance);
-    ChangeBalance(currencyToBuy,amountToBuy,currencyBalance);
-    Console.WriteLine("Конвертация проведена");
-  } 
-  else if (confirmExchange == "n")
-  {
-    Console.WriteLine("Операция отменена");
-  }
-}
+    Console.WriteLine($"Введите сумму {currencyToSell} для обмена: ");
+    amountToSell = Convert.ToDouble(Console.ReadLine());
 
-void ChangeBalance(string currency, decimal amount, string [,] balance)
-{
-  for (int i = 0; i < balance.GetLength(0); i++)
-  {
-    if (balance[i,0] == currency)
+    if (currencyBalance[currencyToSell] < amountToSell)
     {
-      balance[i,1] = Convert.ToString(Convert.ToDecimal(balance[i,1]) + amount);
-      break;
+        Console.WriteLine($"Cумма для обмена превышает доступный остаток");
+        return;
     }
-  }
-}
 
-void PrintBalance()
-{
-  Console.WriteLine("Текущие остатки в разрезе валют.");
-  for (int i = 0; i < currencyBalance.GetLength(0); i++)
-  {
-    Console.Write($"Остаток {currencyBalance[i,0]}:  {currencyBalance[i,1]}");     
+    currencyToBuy = InputString("Введите код валюты, которую хотите купить: ");
+
+    if (!currencyBalance.ContainsKey(currencyToBuy))
+    {
+        Console.WriteLine("Вы ввели неверный код валюты");
+        return;
+    }
+
+    string currencyPair = currencyToSell + currencyToBuy;
+    string reversePair = currencyToBuy + currencyToSell;
+    double exchangeRate = 0;
+    if (currencyRates.ContainsKey(currencyPair))
+    {
+        exchangeRate = currencyRates[currencyPair];
+        amountToBuy = Math.Round(amountToSell * exchangeRate, 2);
+    }
+    else if (currencyRates.ContainsKey(reversePair))
+    {
+        exchangeRate = currencyRates[reversePair];
+        amountToBuy = Math.Round(amountToSell * Math.Round(1 / exchangeRate, 4), 2);
+    }
+
     Console.WriteLine();
-  }
- 
+    Console.WriteLine("Проверьте параметры конвертации и подтвердите выполнение операции");
+    Console.WriteLine($"Продажа. Валюта: {currencyToSell}. Сумма: {amountToSell}");
+    Console.WriteLine($"Покупка. Валюта: {currencyToBuy}. Сумма: {amountToBuy}");
+    Console.WriteLine($"Курс конвертации:{exchangeRate}.");
+
+    Console.WriteLine("Подтверждаете проведение конвертации (y/n)?");
+    string confirmExchange = Console.ReadLine();
+
+    if (confirmExchange == "y")
+    {
+        currencyBalance[currencyToBuy] += amountToBuy;
+        currencyBalance[currencyToSell] -= amountToSell;
+        Console.WriteLine("Конвертация проведена");
+    }
+    else if (confirmExchange == "n")
+    {
+        Console.WriteLine("Операция отменена");
+    }
+}
+
+void PrintBalance(Dictionary<string, double> currencies)
+{
+    Console.WriteLine("Доступные валюты");
+    foreach (var currency in currencies)
+    {
+        Console.WriteLine($"Код - {currency.Key}, остаток -  {currency.Value}");
+    }
+    Console.WriteLine();
+}
+
+void PrintRates(Dictionary<string, double> rates)
+{
+    Console.WriteLine("Курсы валют");
+    foreach (var rate in rates)
+    {
+        Console.WriteLine($"Валютная пара - {rate.Key}, курс -  {rate.Value}");
+    }
+    Console.WriteLine();
 }
 
 void Help()
 {
-  Console.WriteLine("Список доступных команд:");
-  Console.WriteLine("    help - получение списка команд;");
-  Console.WriteLine("    exit - выход из программы;");
-  Console.WriteLine("    exchange - обменять валюту;");
-  Console.WriteLine("    balance - вывести на экран текущие остатки по всем валютам.");
+    Console.WriteLine("Список доступных команд:");
+    Console.WriteLine("    help - получение списка команд;");
+    Console.WriteLine("    exit - выход из программы;");
+    Console.WriteLine("    exchange - обменять валюту;");
+    Console.WriteLine("    balance - вывести на экран текущие остатки по всем валютам.");
+    Console.WriteLine("    rates - вывести на экран курсы валют");
 }
 
 string InputString(string output)
 {
-  Console.WriteLine(output);
-  return  Console.ReadLine().ToUpper(); 
+    Console.WriteLine();
+    Console.WriteLine(output);
+    return Console.ReadLine().ToUpper();
 }
 
