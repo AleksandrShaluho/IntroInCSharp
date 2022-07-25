@@ -3,15 +3,14 @@ int[,] matrix = FillMatrixRandomly();
 Console.WriteLine("Original matrix");
 PrintMatrix(matrix);
 
+int[] index = GetIndexOfMinValue(matrix);
 Console.WriteLine("Cutted Matrix");
-PrintMatrix(GetCuttedMatrix(matrix));
+PrintMatrix(GetCuttedMatrix(matrix, index));
 
-
-int[,] GetCuttedMatrix(int[,] array)
+int[] GetIndexOfMinValue(int[,] array)
 {
     int min = int.MaxValue;
-    int rowMinIndex = 0;
-    int columnMinIndex = 0;
+    int[] minIndex = new int[2];
     for (int i = 0; i < array.GetLength(0); i++)
     {
         for (int j = 0; j < array.GetLength(1); j++)
@@ -19,24 +18,32 @@ int[,] GetCuttedMatrix(int[,] array)
             if (array[i, j] < min)
             {
                 min = array[i, j];
-                rowMinIndex = i;
-                columnMinIndex = j;
+                minIndex[0] = i;
+                minIndex[1] = j;
             }
         }
     }
+    return minIndex;
+}
 
+int[,] GetCuttedMatrix(int[,] array, int[] crosspoint)
+{
     int[,] cuttedMatrix = new int[array.GetLength(0) - 1, array.GetLength(1) - 1];
 
     for (int i = 0; i < cuttedMatrix.GetLength(0); i++)
     {
+
         for (int j = 0; j < cuttedMatrix.GetLength(1); j++)
         {
-	    if (i<rowMinIndex && j < columnMinIndex)
-		cuttedMatrix[i, j] = array[i, j];
-	    else
-		cuttedMatrix[i, j] = array[i + 1, j + 1];
+            if (i < crosspoint[0] && j < crosspoint[1])
+                cuttedMatrix[i, j] = array[i, j];
+            else if (i < crosspoint[0] && j >= crosspoint[1])
+                cuttedMatrix[i, j] = array[i, j + 1];
+            else if (i >= crosspoint[0] && j < crosspoint[1])
+                cuttedMatrix[i, j] = array[i + 1, j];
+            else if (i >= crosspoint[0] && j >= crosspoint[1])
+                cuttedMatrix[i, j] = array[i + 1, j + 1];
         }
-
     }
     return cuttedMatrix;
 }
@@ -57,7 +64,7 @@ void PrintMatrix(int[,] array)
 int[,] FillMatrixRandomly()
 {
     int minDimensionLength = 2;
-    int maxDimensionLength = 5;
+    int maxDimensionLength = 8;
     int minElementValue = 0;
     int maxElementValue = 10;
 
