@@ -54,8 +54,8 @@ int FindMinSumRowIndex(int[,] array)
             min = sum;
             minIndex = i;
         }
-	sum = 0;
-	
+               sum = 0;
+
     }
     return minIndex;
 }
