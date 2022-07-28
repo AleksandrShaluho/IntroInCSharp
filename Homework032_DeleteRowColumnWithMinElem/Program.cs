@@ -4,8 +4,13 @@ Console.WriteLine("Original matrix");
 PrintMatrix(matrix);
 
 int[] index = GetIndexOfMinValue(matrix);
-Console.WriteLine("Cutted Matrix");
+Console.WriteLine("Cutted Matrix - new matrix");
 PrintMatrix(GetCuttedMatrix(matrix, index));
+
+CutMatrix(ref matrix, index);
+Console.WriteLine("Cutted Matrix - original matrix");
+PrintMatrix(matrix);
+
 
 int[] GetIndexOfMinValue(int[,] array)
 {
@@ -26,6 +31,7 @@ int[] GetIndexOfMinValue(int[,] array)
     return minIndex;
 }
 
+//либо создавать новый массив с вырезанными строкой и столбцом
 int[,] GetCuttedMatrix(int[,] array, int[] crosspoint)
 {
     int[,] cuttedMatrix = new int[array.GetLength(0) - 1, array.GetLength(1) - 1];
@@ -46,6 +52,29 @@ int[,] GetCuttedMatrix(int[,] array, int[] crosspoint)
         }
     }
     return cuttedMatrix;
+}
+
+//либо менять исходный массив переставляя ссылку с исходого массива на конечный
+void CutMatrix(ref int[,] array, int[] crosspoint)
+{
+    int[,] cuttedMatrix = new int[array.GetLength(0) - 1, array.GetLength(1) - 1];
+
+    for (int i = 0; i < cuttedMatrix.GetLength(0); i++)
+    {
+
+        for (int j = 0; j < cuttedMatrix.GetLength(1); j++)
+        {
+            if (i < crosspoint[0] && j < crosspoint[1])
+                cuttedMatrix[i, j] = array[i, j];
+            else if (i < crosspoint[0] && j >= crosspoint[1])
+                cuttedMatrix[i, j] = array[i, j + 1];
+            else if (i >= crosspoint[0] && j < crosspoint[1])
+                cuttedMatrix[i, j] = array[i + 1, j];
+            else if (i >= crosspoint[0] && j >= crosspoint[1])
+                cuttedMatrix[i, j] = array[i + 1, j + 1];
+        }
+    }
+            array = cuttedMatrix;
 }
 
 void PrintMatrix(int[,] array)
