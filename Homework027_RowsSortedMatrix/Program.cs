@@ -10,23 +10,22 @@ SortMatrixRows(matrix);
 Console.WriteLine("Sorted Matrix");
 PrintMatrix(matrix);
 
-void SortMatrixRows(int[,] matrix)
+void SortMatrixRows(int[,] array)
 {
-    int[,] sortedMatrix = matrix;
-    for (int row = 0; row < sortedMatrix.GetLength(0); row++)
+    for (int row = 0; row < array.GetLength(0); row++)
     {
         //пузырьком
-        int max = sortedMatrix[row, 0];
+        int max = array[row, 0];
         int buffer = 0;
-        for (int i = matrix.GetLength(1) - 1; i > 0; i--)
+        for (int i = array.GetLength(1) - 1; i > 0; i--)
         {
             for (int j = 0; j < i; j++)
             {
-                if (matrix[row, j + 1] < matrix[row, j])
+                if (array[row, j + 1] < array[row, j])
                 {
                     buffer = matrix[row, j];
-                    matrix[row, j] = matrix[row, j + 1];
-                    matrix[row, j + 1] = buffer;
+                    array[row, j] = array[row, j + 1];
+                    array[row, j + 1] = buffer;
                 }
             }
         }
